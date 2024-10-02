@@ -4,10 +4,11 @@ from datetime import datetime, timedelta
 class XTB:
     __version__ = "1.0"
 
-    def __init__(self, ID, PSW):
+    def __init__(self, ID, PSW, type="demo"):
         self.ID = ID
         self.PSW = PSW
         self.ws = 0
+        self.type = type
         self.exec_start = self.get_time()
         self.connect()
         self.login()
@@ -31,8 +32,7 @@ class XTB:
             #Success
             return True
         else:
-            #Error
-            return False
+            raise Exception(f"Error: Login Failed -> {result['errorDescr']}")
 
     def logout(self):
         logout ={
@@ -550,8 +550,12 @@ class XTB:
         
     def connect(self):
         try:
-            self.ws=websocket.create_connection("wss://ws.xtb.com/demo")
-            #Success
+            if self.type=="demo":
+                self.ws=websocket.create_connection("wss://ws.xtb.com/demo")
+            elif self.type=="real":
+                self.ws=websocket.create_connection("wss://ws.xtb.com/real")
+            else:
+                raise Exception("Error: Wrong type!")
             return True
         except:
             #Error
